@@ -1,0 +1,9 @@
+# web:
+#   image: nginx
+#   ports:
+#   - 8081:80
+
+mongo:
+  image: mongo
+  ports:
+    - 27017:27017
