@@ -22,20 +22,18 @@ const url = 'mongodb://localhost:27017/intern-shop';
 //   res.header('Access-Control-Allow-Headers', "Content-Type")
 // })
 
-app.use(express.static(path.resolve(__dirname,'../intern-shop/public')))
+app.use(express.static(path.resolve(__dirname, '../Intern-Shop-Backend/public/')))
+
 app.get('/',(req,res)=>{
-  res.sendFile(path.resolve(__dirname,'../public/index.html'))
+  res.sendFile(path.resolve(__dirname, '../public/index.html'))
 })
 
-let i = 0
 app.get('/api/getProduct', function (req, res) {
   MongoClient.connect(url, function(err, db) {
     if(!err){
         var collection = db.collection('products')
         collection.find({}).toArray((err, productStore) => {
-        console.log(productStore)
-        console.log("SelectData Complete...")
-        console.log(i++);
+
           // for (var i = 0; i < productStore.length; i++) {
           //   productName.push(productStore[i].name)
           // }
@@ -48,13 +46,19 @@ app.get('/api/getProduct', function (req, res) {
   })
 })
 
-app.get('/api/deleteAll', function (req, res) {
+app.get('/api/getBillList', function (req, res) {
   MongoClient.connect(url, function(err, db) {
     if(!err){
-        var collection = db.collection('products')
-        collection.deleteMany({})
-      console.log("Delete Complete...")
-      res.send("Delete Complete...")
+        var collection = db.collection('billLists')
+        collection.find({}).toArray((err, billList) => {
+        console.log("Select BillLists Complete...")
+
+          // for (var i = 0; i < productStore.length; i++) {
+          //   productName.push(productStore[i].name)
+          // }
+
+        res.send(billList)
+        })
     }
     else console.log(err)
     db.close()
@@ -64,13 +68,29 @@ app.get('/api/deleteAll', function (req, res) {
 app.post('/api/insertProduct', function (req, res) {
   MongoClient.connect(url, function(err, db) {
     if(!err){
-      db.collection('products').insert(req.body)
+      console.log(req.body);
+      db.collection('billLists').insert(req.body)
       console.log("Insert Complete...")
-        res.send({success:true})
+      res.send({ success: true })
     }
     else {
       db.close()
-      res.send({success:false,message:err.message})
+      res.send({ success: false , message: err.message })
+    }
+  })
+})
+
+app.get('/api/deleteBill', function (req, res) {
+  MongoClient.connect(url, function(err, db) {
+    if(!err){
+      var collection = db.collection('billLists')
+      collection.deleteMany({})
+      console.log("Delete Complete...")
+      res.send({ success : true })
+    }
+    else {
+      db.close()
+      res.send({ success: false , message: err.message })
     }
   })
 })
